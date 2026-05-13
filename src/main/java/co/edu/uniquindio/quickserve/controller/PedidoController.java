@@ -60,5 +60,44 @@ public class PedidoController {
         return "pedidos/detalle";
     }
 
+    // ── FORMULARIO REGISTRAR (PANTALLA 1 - transacción) ──────────────────────
+
+    @GetMapping("/registrar")
+    public String formRegistrar(@RequestParam(required = false) Integer mesa, Model model) {
+        model.addAttribute("mesasDisponibles", pedidoService.getMesasDisponibles());
+        model.addAttribute("meseros",          pedidoService.getMeseros());
+        model.addAttribute("entradas",         productoService.listarPorTipo(TipoProducto.ENTRADA));
+        model.addAttribute("platosFuertes",    productoService.listarPorTipo(TipoProducto.PLATOFUERTE));
+        model.addAttribute("postres",          productoService.listarPorTipo(TipoProducto.POSTRE));
+        model.addAttribute("bebidas",          productoService.listarPorTipo(TipoProducto.BEBIDA));
+        model.addAttribute("mesaPreseleccionada", mesa);
+        model.addAttribute("notificaciones",   pedidoService.contarNotificaciones());
+        return "pedidos/registrar";
+    }
+
+    @PostMapping("/registrar")
+    public String registrar(
+            @RequestParam Integer mesaNumero,
+            @RequestParam String meseroCedula,
+            @RequestParam(required = false) String observaciones,
+            @RequestParam(name = "productoIds", required = false) List<Integer> productoIds,
+            @RequestParam(name = "cantidades",  required = false) List<Integer> cantidades,
+            RedirectAttributes ra) {
+
+        if (productoIds == null || productoIds.isEmpty()) {
+            ra.addFlashAttribute("error", "Debe agregar al menos un producto al pedido.");
+            return "redirect:/pedidos/registrar";
+        }
+
+        try {
+            Pedido nuevo = pedidoService.registrarPedido(
+                    mesaNumero, meseroCedula, productoIds, cantidades, observaciones);
+            return "redirect:/pedidos/confirmado/" + nuevo.getId();
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/pedidos/registrar";
+        }
+    }
+
 
 }
