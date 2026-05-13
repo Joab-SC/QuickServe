@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Productos — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}">Pedidos</a>
+    <a th:href="@{/productos}" class="active">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="flex-between page-header">
+    <div>
+      <h1>Menú · Productos</h1>
+      <p th:text="${productos.size()} + ' producto(s) mostrado(s)'"></p>
+    </div>
+    <a th:href="@{/productos/crear}" class="btn btn-primary">+ Nuevo Producto</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+  <div class="alert alert-error"   th:if="${error}" th:text="${error}"></div>
+
+  <!-- Filtros -->
+  <div class="card mb-2">
+    <div class="flex gap-sm" style="flex-wrap:wrap;align-items:center;">
+      <span class="text-muted text-sm" style="margin-right:.25rem;">Filtrar por tipo:</span>
+      <a th:href="@{/productos}" class="btn btn-sm"
+         th:classappend="${filtroTipo == ''} ? 'btn-primary' : 'btn-secondary'">Todos</a>
+      <a th:each="t : ${tipos}"
+         th:href="@{/productos(tipo=${t.name()})}"
+         th:text="${t.label}"
+         class="btn btn-sm"
+         th:classappend="${filtroTipo == t.name()} ? 'btn-primary' : 'btn-secondary'"></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div th:if="${productos.isEmpty()}"
+         style="text-align:center;padding:3rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      No hay productos con ese filtro.
+    </div>
+    <div class="table-wrap" th:unless="${productos.isEmpty()}">
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th><th>Nombre</th><th>Descripción</th><th>Tipo</th>
+          <th>Precio</th><th>Disponible</th><th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${productos}">
+          <td class="text-muted" th:text="${p.id}"></td>
+          <td><strong th:text="${p.nombre}"></strong></td>
+          <td class="text-muted" style="max-width:200px;"
+              th:text="${p.descripcion}"></td>
+          <td>
+            <span class="badge estado-creado" th:text="${p.tipo.label}"></span>
+          </td>
+          <td>
+            <strong style="font-family:'Playfair Display',serif;color:var(--granate);"
+                    th:text="${p.precioFormateado}"></strong>
+          </td>
+          <td>
+            <span class="badge estado-listo"     th:if="${p.disponible}">Sí</span>
+            <span class="badge estado-entregado" th:unless="${p.disponible}">No</span>
+          </td>
+          <td>
+            <div class="flex gap-sm">
+              <a th:href="@{/productos/{id}/editar(id=${p.id})}"
+                 class="btn btn-outline btn-sm">Editar</a>
+              <form th:action="@{/productos/{id}/eliminar(id=${p.id})}" method="post"
+                    th:attr="onsubmit=|return confirm('¿Eliminar ${p.nombre}?');|">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
