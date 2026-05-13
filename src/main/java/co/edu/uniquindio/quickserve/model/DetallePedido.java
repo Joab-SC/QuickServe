@@ -1,35 +1,32 @@
 package co.edu.uniquindio.quickserve.model;
 
 public class DetallePedido {
+
     private Integer id;
-    private Integer pedidoId;
+    private Pedido pedido;
     private Producto producto;
     private Integer cantidad;
 
     public DetallePedido() {}
 
-    public DetallePedido(Integer id, Integer pedidoId, Producto producto, Integer cantidad) {
+    public DetallePedido(Integer id, Pedido pedido, Producto producto, Integer cantidad) {
         this.id = id;
-        this.pedidoId = pedidoId;
+        this.pedido = pedido;
         this.producto = producto;
         this.cantidad = cantidad;
     }
 
     public Double getSubtotal() {
-        if (producto == null || producto.getPrecio() == null || cantidad == null) return 0.0;
+        if (producto == null || cantidad == null) return 0.0;
         return producto.getPrecio() * cantidad;
     }
 
-    public String getSubtotalFormateado() {
-        return String.format("$%,.0f", getSubtotal());
-    }
-
-    // Getters & Setters
+    // getters y setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
-    public Integer getPedidoId() { return pedidoId; }
-    public void setPedidoId(Integer pedidoId) { this.pedidoId = pedidoId; }
+    public Pedido getPedido() { return pedido; }
+    public void setPedido(Pedido pedido) { this.pedido = pedido; }
 
     public Producto getProducto() { return producto; }
     public void setProducto(Producto producto) { this.producto = producto; }
