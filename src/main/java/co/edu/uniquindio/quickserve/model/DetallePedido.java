@@ -33,4 +33,7 @@ public class DetallePedido {
 
     public Integer getCantidad() { return cantidad; }
     public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public String getSubtotalFormateado() {
+        return String.format("$%,.0f", getSubtotal());
+    }
 }
