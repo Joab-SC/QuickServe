@@ -37,4 +37,10 @@ public class CocinaController {
         return "redirect:/cocina";
     }
 
+    /** Paso 5 del diagrama: Cocina marca LISTO → notifica mesero */
+    @PostMapping("/{id}/listo")
+    public String marcarListo(@PathVariable Integer id) {
+        pedidoService.marcarListo(id);
+        return "redirect:/cocina";
+    }
 }
