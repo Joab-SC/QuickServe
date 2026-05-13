@@ -176,4 +176,12 @@ public class PedidoController {
         return "redirect:" + next;
     }
 
+    // ── LIMPIAR NOTIFICACIÓN ──────────────────────────────────────────────────
+
+    @PostMapping("/{id}/notificacion/limpiar")
+    public String limpiarNotificacion(@PathVariable Integer id,
+                                       @RequestParam(defaultValue = "/mesero") String next) {
+        pedidoService.limpiarNotificacion(id);
+        return "redirect:" + next;
+    }
 }
