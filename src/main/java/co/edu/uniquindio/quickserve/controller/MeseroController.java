@@ -31,8 +31,7 @@ public class MeseroController {
                 pedidoService.listarPorEstado(EstadoPedido.CREADO));
         model.addAttribute("notificaciones",
                 pedidoService.contarNotificaciones());
-        model.addAttribute("mesasOcupadas",
-                pedidoService.getMesasOcupadas());
+        model.addAttribute("mesasOcupadas", pedidoService.getMesasParaDesocupar());
         return "mesero/panel";
     }
 
