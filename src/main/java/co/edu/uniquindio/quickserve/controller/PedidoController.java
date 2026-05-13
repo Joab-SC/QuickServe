@@ -48,5 +48,17 @@ public class PedidoController {
         return "pedidos/listar";
     }
 
+    // ── DETALLE ───────────────────────────────────────────────────────────────
+
+    @GetMapping("/{id}")
+    public String detalle(@PathVariable Integer id, Model model) {
+        Optional<Pedido> pedido = pedidoService.buscarPorId(id);
+        if (pedido.isEmpty()) return "redirect:/pedidos";
+        model.addAttribute("pedido",         pedido.get());
+        model.addAttribute("estados",        EstadoPedido.values());
+        model.addAttribute("notificaciones", pedidoService.contarNotificaciones());
+        return "pedidos/detalle";
+    }
+
 
 }
