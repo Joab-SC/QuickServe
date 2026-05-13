@@ -159,7 +159,6 @@ public class PedidoService {
             if (nuevoEstado == EstadoPedido.ENTREGADO) {
                 p.setHoraEntrega(LocalDateTime.now());
                 p.setNotificacionPendiente(false);
-                if (p.getMesa() != null) p.getMesa().setOcupada(false);
             }
             return pedidoRepository.save(p);
         });
@@ -170,6 +169,10 @@ public class PedidoService {
             p.setNotificacionPendiente(false);
             pedidoRepository.save(p);
         });
+    }
+
+    public List<Mesa> getMesasOcupadas() {
+        return mesaRepository.findOcupadas();
     }
 
     // ── CRUD ──────────────────────────────────────────────────────────────────
@@ -203,6 +206,13 @@ public class PedidoService {
         pedidoRepository.findById(pedidoId).ifPresent(p -> {
             if (p.getMesa() != null) p.getMesa().setOcupada(false);
             pedidoRepository.deleteById(pedidoId);
+        });
+    }
+
+    public void desocuparMesa(Integer mesaNumero) {
+        mesaRepository.findByNumero(mesaNumero).ifPresent(mesa -> {
+            mesa.setOcupada(false);
+            mesaRepository.save(mesa);
         });
     }
 }

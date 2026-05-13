@@ -31,6 +31,8 @@ public class MeseroController {
                 pedidoService.listarPorEstado(EstadoPedido.CREADO));
         model.addAttribute("notificaciones",
                 pedidoService.contarNotificaciones());
+        model.addAttribute("mesasOcupadas",
+                pedidoService.getMesasOcupadas());
         return "mesero/panel";
     }
 
@@ -45,6 +47,12 @@ public class MeseroController {
     @PostMapping("/{id}/notificacion/limpiar")
     public String limpiarNotificacion(@PathVariable Integer id) {
         pedidoService.limpiarNotificacion(id);
+        return "redirect:/mesero";
+    }
+
+    @PostMapping("/mesas/{numero}/desocupar")
+    public String desocuparMesa(@PathVariable Integer numero) {
+        pedidoService.desocuparMesa(numero);
         return "redirect:/mesero";
     }
 }
