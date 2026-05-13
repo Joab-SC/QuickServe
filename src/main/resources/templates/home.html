@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — QuickServe</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">QuickServe</a>
+  <div class="navbar-links">
+    <a href="/" class="active">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">
+      Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="flex-between page-header">
+    <div>
+      <h1>Panel General</h1>
+      <p>Vista en tiempo real del restaurante</p>
+    </div>
+    <a th:href="@{/pedidos/registrar}" class="btn btn-primary btn-lg">+ Nuevo Pedido</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid-4 mb-2">
+    <div class="stat-card">
+      <div class="stat-value stat-accent" th:text="${pedidosActivos.size()}">0</div>
+      <div class="stat-label">Pedidos activos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" th:text="${totalPedidos}">0</div>
+      <div class="stat-label">Total del día</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" th:text="${mesas.size()}">10</div>
+      <div class="stat-label">Mesas totales</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value stat-accent" th:text="${mesasDisponibles}">0</div>
+      <div class="stat-label">Mesas libres</div>
+    </div>
+  </div>
+
+  <!-- Estado de Mesas -->
+  <div class="card mb-2">
+    <div class="card-header">
+      <span class="card-title">Estado de Mesas</span>
+      <div class="flex gap-sm">
+        <span class="badge estado-listo">● Libre</span>
+        <span class="badge estado-creado">● Ocupada</span>
+      </div>
+    </div>
+    <div class="mesa-grid">
+      <th:block th:each="mesa : ${mesas}">
+        <th:block th:if="${mesa.ocupada}">
+          <th:block th:each="ped : ${pedidosActivos}" th:if="${ped.mesa.numero == mesa.numero}">
+            <a th:href="@{/pedidos/{id}(id=${ped.id})}" class="mesa-tile ocupada">
+              <div class="mesa-num" th:text="${mesa.numero}">1</div>
+              <div class="mesa-estado">Ocupada</div>
+              <div class="text-sm text-muted" th:text="'Pedido #' + ${ped.id}"></div>
+            </a>
+          </th:block>
+        </th:block>
+        <a th:unless="${mesa.ocupada}"
+           th:href="@{/pedidos/registrar(mesa=${mesa.numero})}"
+           class="mesa-tile libre">
+          <div class="mesa-num" th:text="${mesa.numero}">1</div>
+          <div class="mesa-estado">Libre</div>
+        </a>
+      </th:block>
+    </div>
+  </div>
+
+  <!-- Pedidos activos -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pedidos en Curso</span>
+      <a th:href="@{/pedidos}" class="btn btn-secondary btn-sm">Ver todos</a>
+    </div>
+    <div th:if="${pedidosActivos.isEmpty()}"
+         style="text-align:center;padding:2.5rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      No hay pedidos activos en este momento.
+    </div>
+    <div class="table-wrap" th:unless="${pedidosActivos.isEmpty()}">
+      <table>
+        <thead>
+        <tr>
+          <th>#</th><th>Mesa</th><th>Mesero</th>
+          <th>Ítems</th><th>Total</th><th>Estado</th><th>Hora</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pedidosActivos}">
+          <td><strong th:text="'#' + ${p.id}"></strong></td>
+          <td th:text="'Mesa ' + ${p.mesa.numero}"></td>
+          <td th:text="${p.mesero != null ? p.mesero.nombre : '—'}"></td>
+          <td th:text="${p.detalles.size()} + ' ítem(s)'"></td>
+          <td><strong th:text="${p.totalFormateado}"></strong></td>
+          <td><span class="badge" th:classappend="${p.estadoCss}" th:text="${p.estado.label}"></span></td>
+          <td th:text="${p.horaPedidoFormateada}"></td>
+          <td>
+            <a th:href="@{/pedidos/{id}(id=${p.id})}" class="btn btn-secondary btn-sm">Ver</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
