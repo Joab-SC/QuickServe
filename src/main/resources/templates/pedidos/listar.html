@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Pedidos — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}" class="active">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="flex-between page-header">
+    <div>
+      <h1>Gestión de Pedidos</h1>
+      <p th:text="${totalPedidos} + ' pedido(s) registrado(s) hoy'"></p>
+    </div>
+    <a th:href="@{/pedidos/registrar}" class="btn btn-primary">+ Nuevo Pedido</a>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-2">
+    <div class="flex gap-sm" style="flex-wrap:wrap; align-items:center;">
+      <span class="text-muted text-sm" style="margin-right:.25rem;">Filtrar por estado:</span>
+      <a th:href="@{/pedidos}" class="btn btn-sm"
+         th:classappend="${filtroEstado == ''} ? 'btn-primary' : 'btn-secondary'">Todos</a>
+      <a th:href="@{/pedidos(estado='CREADO')}" class="btn btn-sm"
+         th:classappend="${filtroEstado == 'CREADO'} ? 'btn-primary' : 'btn-secondary'">Nuevos</a>
+      <a th:href="@{/pedidos(estado='PREPARACION')}" class="btn btn-sm"
+         th:classappend="${filtroEstado == 'PREPARACION'} ? 'btn-primary' : 'btn-secondary'">En Preparación</a>
+      <a th:href="@{/pedidos(estado='LISTO')}" class="btn btn-sm"
+         th:classappend="${filtroEstado == 'LISTO'} ? 'btn-primary' : 'btn-secondary'">Listos</a>
+      <a th:href="@{/pedidos(estado='ENTREGADO')}" class="btn btn-sm"
+         th:classappend="${filtroEstado == 'ENTREGADO'} ? 'btn-primary' : 'btn-secondary'">Entregados</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div th:if="${pedidos.isEmpty()}"
+         style="text-align:center;padding:3rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      No se encontraron pedidos con ese filtro.
+    </div>
+    <div class="table-wrap" th:unless="${pedidos.isEmpty()}">
+      <table>
+        <thead>
+        <tr>
+          <th>#</th><th>Mesa</th><th>Mesero</th><th>Ítems</th>
+          <th>Total</th><th>Estado</th><th>Hora</th><th>Entrega</th><th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pedidos}">
+          <td><strong th:text="'#' + ${p.id}"></strong></td>
+          <td th:text="'Mesa ' + ${p.mesa.numero}"></td>
+          <td th:text="${p.mesero != null ? p.mesero.nombre : '—'}"></td>
+          <td th:text="${p.detalles.size()} + ' ítem(s)'"></td>
+          <td><strong th:text="${p.totalFormateado}"></strong></td>
+          <td><span class="badge" th:classappend="${p.estadoCss}" th:text="${p.estado.label}"></span></td>
+          <td th:text="${p.horaPedidoFormateada}"></td>
+          <td th:text="${p.horaEntregaFormateada}"></td>
+          <td>
+            <div class="flex gap-sm">
+              <a th:href="@{/pedidos/{id}(id=${p.id})}" class="btn btn-secondary btn-sm">Ver</a>
+              <a th:href="@{/pedidos/{id}/editar(id=${p.id})}" class="btn btn-outline btn-sm"
+                 th:if="${p.estado.name() != 'ENTREGADO'}">Editar</a>
+              <form th:action="@{/pedidos/{id}/eliminar(id=${p.id})}" method="post"
+                    onsubmit="return confirm('¿Eliminar pedido?')">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
