@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="refresh" content="20"/>
+  <title>Panel Mesero — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}" class="active">
+      Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="flex-between page-header">
+    <div>
+      <h1>Panel del Mesero</h1>
+      <p>Pedidos listos para entregar y en espera</p>
+    </div>
+    <a th:href="@{/pedidos/registrar}" class="btn btn-primary">+ Nuevo Pedido</a>
+  </div>
+
+  <!-- Pedidos LISTOS -->
+  <div th:if="${!pedidosListos.isEmpty()}">
+    <div class="alert alert-success mb-2" style="font-weight:600;font-size:.9rem;">
+      🔔 <span th:text="${pedidosListos.size()}"></span> pedido(s) listo(s) para entregar
+    </div>
+    <div class="mesero-notif-grid mb-2">
+      <div th:each="p : ${pedidosListos}" class="mesero-notif-card">
+
+        <div class="flex" style="margin-bottom:.75rem;gap:.75rem;">
+          <div class="mesero-notif-ping" th:if="${p.notificacionPendiente}"></div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:1rem;color:var(--vino);"
+                 th:text="'Pedido #' + ${p.id} + ' · Mesa ' + ${p.mesa.numero}"></div>
+            <div class="text-muted text-sm"
+                 th:text="${p.mesero != null ? p.mesero.nombre : ''} + ' · ' + ${p.horaPedidoFormateada}"></div>
+          </div>
+          <span class="badge estado-listo">Listo</span>
+        </div>
+
+        <div class="alert alert-warning mb-1"
+             th:if="${p.observaciones != null and !p.observaciones.isBlank()}"
+             style="padding:.4rem .65rem;font-size:.8rem;margin-bottom:.75rem;">
+          <strong>Nota:</strong> <span th:text="${p.observaciones}"></span>
+        </div>
+
+        <div style="margin-bottom:.9rem;">
+          <div th:each="d : ${p.detalles}"
+               style="display:flex;justify-content:space-between;align-items:center;
+                      padding:.3rem 0;border-bottom:1px dashed var(--s-ok-b);font-size:.835rem;">
+            <span th:text="${d.cantidad} + '× ' + ${d.producto.nombre}"></span>
+            <span class="text-muted text-sm" th:text="${d.producto.tipo.label}"></span>
+          </div>
+        </div>
+
+        <div class="flex gap-sm">
+          <form th:action="@{/mesero/{id}/entregar(id=${p.id})}" method="post" style="flex:1;">
+            <button type="submit" class="btn btn-success btn-full">
+              ✓ Confirmar Entrega
+            </button>
+          </form>
+          <form th:action="@{/mesero/{id}/notificacion/limpiar(id=${p.id})}" method="post"
+                th:if="${p.notificacionPendiente}">
+            <button type="submit" class="btn btn-secondary btn-sm">Visto</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin pedidos listos -->
+  <div th:if="${pedidosListos.isEmpty()}" class="card mb-2">
+    <div style="text-align:center;padding:2rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      Sin pedidos listos por entregar.<br/>
+      <span class="text-sm">Actualización automática cada 20 segundos.</span>
+    </div>
+  </div>
+
+  <!-- Pedidos esperando cocina -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Esperando Cocina</span>
+      <span class="badge estado-creado" th:text="${pedidosCreados.size()} + ' pendiente(s)'"></span>
+    </div>
+    <div th:if="${pedidosCreados.isEmpty()}"
+         style="text-align:center;padding:1.5rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      No hay pedidos pendientes.
+    </div>
+    <div class="table-wrap" th:unless="${pedidosCreados.isEmpty()}">
+      <table>
+        <thead>
+        <tr><th>#</th><th>Mesa</th><th>Mesero</th><th>Ítems</th><th>Total</th><th>Hora</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${pedidosCreados}">
+          <td><strong th:text="'#' + ${p.id}"></strong></td>
+          <td th:text="'Mesa ' + ${p.mesa.numero}"></td>
+          <td th:text="${p.mesero != null ? p.mesero.nombre : '—'}"></td>
+          <td th:text="${p.detalles.size()} + ' ítem(s)'"></td>
+          <td th:text="${p.totalFormateado}"></td>
+          <td th:text="${p.horaPedidoFormateada}"></td>
+          <td><a th:href="@{/pedidos/{id}(id=${p.id})}" class="btn btn-secondary btn-sm">Ver</a></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
