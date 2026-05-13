@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="refresh" content="30"/>
+  <title>Cocina — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="cocina-body">
+
+<!-- Topbar -->
+<div class="cocina-topbar">
+  <a href="/" class="cocina-nav-brand">
+    La Mesa <span>Sobria</span> — Cocina
+  </a>
+  <div class="cocina-topbar-actions">
+    <a href="/" style="color:var(--ck-muted);font-size:.8rem;text-decoration:none;
+       padding:.3rem .75rem;border:1px solid var(--ck-border);border-radius:6px;
+       transition:color .15s;" onmouseover="this.style.color='var(--ck-text)'"
+       onmouseout="this.style.color='var(--ck-muted)'">
+      ← Sistema
+    </a>
+    <span class="cocina-tiempo" id="reloj">--:--:--</span>
+  </div>
+</div>
+
+<div class="cocina-container">
+
+  <!-- ══ PENDIENTES ══════════════════════════════════════ -->
+  <div class="cocina-section">
+    <div class="cocina-section-title">
+      Pendientes de Iniciar
+      <span class="count-pill" th:text="${pedidosCreados.size()}">0</span>
+    </div>
+
+    <div th:if="${pedidosCreados.isEmpty()}" class="cocina-empty">
+      ✓ Sin pedidos pendientes
+    </div>
+
+    <div class="cocina-grid" th:unless="${pedidosCreados.isEmpty()}">
+      <div th:each="p : ${pedidosCreados}" class="cocina-card urgente">
+
+        <div class="cocina-card-header">
+          <div class="cocina-mesa-badge" th:text="${p.mesa.numero}"></div>
+          <div class="cocina-card-info">
+            <div class="cocina-card-title" th:text="'Pedido #' + ${p.id}"></div>
+            <div class="cocina-card-meta" th:text="${p.horaPedidoFormateada}"></div>
+          </div>
+          <span class="cocina-badge-creado">Nuevo</span>
+        </div>
+
+        <div class="cocina-obs"
+             th:if="${p.observaciones != null and !p.observaciones.isBlank()}">
+          ⚠ <span th:text="${p.observaciones}"></span>
+        </div>
+
+        <div class="cocina-items">
+          <div th:each="d : ${p.detalles}" class="cocina-item">
+            <span class="cocina-item-qty" th:text="${d.cantidad}"></span>
+            <span class="cocina-item-nombre" th:text="${d.producto.nombre}"></span>
+            <span class="cocina-item-tipo" th:text="${d.producto.tipo.label}"></span>
+          </div>
+        </div>
+
+        <div class="cocina-actions">
+          <form th:action="@{/cocina/{id}/preparacion(id=${p.id})}" method="post" style="flex:1;">
+            <button type="submit" class="btn-cocina-prep">
+              ▶ Iniciar Preparación
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EN PREPARACIÓN ═════════════════════════════════ -->
+  <div class="cocina-section">
+    <div class="cocina-section-title" style="border-left-color:#e8a820;">
+      En Preparación
+      <span class="count-pill" th:text="${pedidosPreparacion.size()}">0</span>
+    </div>
+
+    <div th:if="${pedidosPreparacion.isEmpty()}" class="cocina-empty">
+      Sin pedidos en preparación.
+    </div>
+
+    <div class="cocina-grid" th:unless="${pedidosPreparacion.isEmpty()}">
+      <div th:each="p : ${pedidosPreparacion}" class="cocina-card">
+
+        <div class="cocina-card-header">
+          <div class="cocina-mesa-badge" th:text="${p.mesa.numero}"></div>
+          <div class="cocina-card-info">
+            <div class="cocina-card-title" th:text="'Pedido #' + ${p.id}"></div>
+            <div class="cocina-card-meta" th:text="${p.horaPedidoFormateada}"></div>
+          </div>
+          <span class="cocina-badge-prep">Cocinando</span>
+        </div>
+
+        <div class="cocina-obs"
+             th:if="${p.observaciones != null and !p.observaciones.isBlank()}">
+          ⚠ <span th:text="${p.observaciones}"></span>
+        </div>
+
+        <div class="cocina-items">
+          <div th:each="d : ${p.detalles}" class="cocina-item">
+            <span class="cocina-item-qty" th:text="${d.cantidad}"></span>
+            <span class="cocina-item-nombre" th:text="${d.producto.nombre}"></span>
+            <span class="cocina-item-tipo" th:text="${d.producto.tipo.label}"></span>
+          </div>
+        </div>
+
+        <div class="cocina-actions">
+          <form th:action="@{/cocina/{id}/listo(id=${p.id})}" method="post" style="flex:1;">
+            <button type="submit" class="btn-cocina-listo">
+              ✓ Listo — Notificar Mesero
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function tick() {
+    document.getElementById('reloj').textContent =
+            new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
