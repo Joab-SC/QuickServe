@@ -1,4 +1,4 @@
-# QuickServe 🍽️
+# QuickServe 
 
 Sistema de gestión de pedidos para restaurantes — proyecto académico de la **Universidad del Quindío**. Coordina en tiempo real el flujo mesero → cocina → entrega, sin base de datos (todo en memoria).
 
