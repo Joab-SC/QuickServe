@@ -154,5 +154,13 @@ public class PedidoController {
         return "redirect:/pedidos/" + id;
     }
 
+    // ── ELIMINAR ──────────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/eliminar")
+    public String eliminar(@PathVariable Integer id) {
+        pedidoService.eliminar(id);
+        return "redirect:/pedidos";
+    }
+
 
 }
