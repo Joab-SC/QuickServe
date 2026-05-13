@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${pageTitle} + ' — La Mesa Sobria'">La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <th:block th:fragment="head-extra"></th:block>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a th:href="@{/}"
+       th:classappend="${activePage == 'home'} ? 'active' : ''">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}"
+       th:classappend="${activePage == 'registrar'} ? 'active' : ''">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}"
+       th:classappend="${activePage == 'pedidos'} ? 'active' : ''">Pedidos</a>
+    <a th:href="@{/productos}"
+       th:classappend="${activePage == 'productos'} ? 'active' : ''">Productos</a>
+    <a th:href="@{/cocina}"
+       th:classappend="${activePage == 'cocina'} ? 'active' : ''">Cocina</a>
+    <a th:href="@{/mesero}"
+       th:classappend="${activePage == 'mesero'} ? 'active' : ''">
+      Mesero
+      <span class="notif-badge"
+            th:if="${notificaciones != null and notificaciones > 0}"
+            th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+  <th:block th:fragment="content"></th:block>
+</div>
+
+</body>
+</html>
