@@ -64,21 +64,38 @@
     </div>
     <div class="mesa-grid">
       <th:block th:each="mesa : ${mesas}">
+
+        <!-- Mesa OCUPADA -->
         <th:block th:if="${mesa.ocupada}">
-          <th:block th:each="ped : ${pedidosActivos}" th:if="${ped.mesa.numero == mesa.numero}">
-            <a th:href="@{/pedidos/{id}(id=${ped.id})}" class="mesa-tile ocupada">
+          <th:block th:with="pedActivo=${pedidosPorMesa[mesa.numero]}">
+
+            <!-- Ocupada con pedido activo → link al pedido -->
+            <a th:if="${pedActivo != null}"
+               th:href="@{/pedidos/{id}(id=${pedActivo.id})}"
+               class="mesa-tile ocupada">
               <div class="mesa-num" th:text="${mesa.numero}">1</div>
               <div class="mesa-estado">Ocupada</div>
-              <div class="text-sm text-muted" th:text="'Pedido #' + ${ped.id}"></div>
+              <div class="text-sm text-muted" th:text="'Pedido #' + ${pedActivo.id}"></div>
             </a>
+
+            <!-- Ocupada sin pedido activo (entregado, esperando desocupar) -->
+            <div th:unless="${pedActivo != null}" class="mesa-tile ocupada">
+              <div class="mesa-num" th:text="${mesa.numero}">1</div>
+              <div class="mesa-estado">Ocupada</div>
+              <div class="text-sm text-muted">Pendiente desocupar</div>
+            </div>
+
           </th:block>
         </th:block>
+
+        <!-- Mesa LIBRE → link a nuevo pedido -->
         <a th:unless="${mesa.ocupada}"
            th:href="@{/pedidos/registrar(mesa=${mesa.numero})}"
            class="mesa-tile libre">
           <div class="mesa-num" th:text="${mesa.numero}">1</div>
           <div class="mesa-estado">Libre</div>
         </a>
+
       </th:block>
     </div>
   </div>
