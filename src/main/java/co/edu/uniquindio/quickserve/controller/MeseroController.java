@@ -34,4 +34,11 @@ public class MeseroController {
         return "mesero/panel";
     }
 
+    /** Paso 6 del diagrama: Mesero confirma entrega */
+    @PostMapping("/{id}/entregar")
+    public String confirmarEntrega(@PathVariable Integer id) {
+        pedidoService.marcarEntregado(id);
+        return "redirect:/mesero";
+    }
+
 }
