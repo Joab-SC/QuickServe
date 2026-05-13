@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="'Pedido #' + ${pedido.id} + ' — La Mesa Sobria'">Detalle</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}" class="active">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="flex-between page-header">
+    <div>
+      <h1 th:text="'Pedido #' + ${pedido.id} + ' · Mesa ' + ${pedido.mesa.numero}"></h1>
+      <p th:text="${pedido.horaPedidoFormateada}"></p>
+    </div>
+    <div class="flex gap-sm">
+      <a th:href="@{/pedidos}" class="btn btn-secondary">← Volver</a>
+      <a th:href="@{/pedidos/{id}/editar(id=${pedido.id})}" class="btn btn-outline"
+         th:if="${pedido.estado.name() != 'ENTREGADO'}">Editar</a>
+    </div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+
+    <!-- Info + productos -->
+    <div>
+      <div class="card mb-2">
+        <div class="card-header">
+          <span class="card-title">Información del Pedido</span>
+          <span class="badge" th:classappend="${pedido.estadoCss}" th:text="${pedido.estado.label}"></span>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="form-label">Mesa</div>
+            <div style="font-weight:600;" th:text="'Mesa ' + ${pedido.mesa.numero}"></div>
+          </div>
+          <div>
+            <div class="form-label">Mesero</div>
+            <div style="font-weight:600;" th:text="${pedido.mesero != null ? pedido.mesero.nombre : '—'}"></div>
+          </div>
+          <div>
+            <div class="form-label">Hora Pedido</div>
+            <div th:text="${pedido.horaPedidoFormateada}"></div>
+          </div>
+          <div>
+            <div class="form-label">Hora Entrega</div>
+            <div th:text="${pedido.horaEntregaFormateada}"></div>
+          </div>
+        </div>
+        <div class="alert alert-warning mt-2"
+             th:if="${pedido.observaciones != null and !pedido.observaciones.isBlank()}"
+             style="margin-bottom:0;">
+          <strong>Nota:</strong> <span th:text="${pedido.observaciones}"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Productos</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+            <tr>
+              <th>Producto</th><th>Tipo</th>
+              <th style="text-align:center;">Cant.</th>
+              <th style="text-align:right;">P. Unit.</th>
+              <th style="text-align:right;">Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${pedido.detalles}">
+              <td><strong th:text="${d.producto.nombre}"></strong></td>
+              <td th:text="${d.producto.tipo.label}"></td>
+              <td style="text-align:center;" th:text="${d.cantidad}"></td>
+              <td style="text-align:right;" th:text="${d.producto.precioFormateado}"></td>
+              <td style="text-align:right;">
+                <strong th:text="${d.subtotalFormateado}"></strong>
+              </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="4"
+                  style="padding:.7rem 1.4rem;text-align:right;font-weight:700;font-size:.9rem;border-top:2px solid var(--border-md);">
+                TOTAL
+              </td>
+              <td style="padding:.7rem 1.4rem;text-align:right;font-weight:700;font-size:1.1rem;
+                           border-top:2px solid var(--border-md);color:var(--granate);
+                           font-family:'Playfair Display',serif;"
+                  th:text="${pedido.totalFormateado}"></td>
+            </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div>
+
+      <!-- Cambiar estado -->
+      <div class="card mb-2" th:if="${pedido.estado.name() != 'ENTREGADO'}">
+        <div class="card-header">
+          <span class="card-title">Actualizar Estado</span>
+        </div>
+        <p class="text-muted text-sm mb-2">
+          Avanza el pedido al siguiente estado del flujo.
+        </p>
+
+        <form th:action="@{/pedidos/{id}/estado(id=${pedido.id})}" method="post"
+              th:if="${pedido.estado.name() == 'CREADO'}">
+          <input type="hidden" name="estado" value="PREPARACION"/>
+          <input type="hidden" name="next" th:value="@{/pedidos/{id}(id=${pedido.id})}"/>
+          <button type="submit" class="btn btn-warning btn-full">
+            Marcar En Preparación
+          </button>
+        </form>
+
+        <form th:action="@{/pedidos/{id}/estado(id=${pedido.id})}" method="post"
+              th:if="${pedido.estado.name() == 'PREPARACION'}">
+          <input type="hidden" name="estado" value="LISTO"/>
+          <input type="hidden" name="next" th:value="@{/pedidos/{id}(id=${pedido.id})}"/>
+          <button type="submit" class="btn btn-success btn-full">
+            Marcar Como Listo
+          </button>
+        </form>
+
+        <form th:action="@{/pedidos/{id}/estado(id=${pedido.id})}" method="post"
+              th:if="${pedido.estado.name() == 'LISTO'}">
+          <input type="hidden" name="estado" value="ENTREGADO"/>
+          <input type="hidden" name="next" th:value="@{/pedidos/{id}(id=${pedido.id})}"/>
+          <button type="submit" class="btn btn-primary btn-full">
+            Confirmar Entrega
+          </button>
+        </form>
+      </div>
+
+      <!-- Entregado -->
+      <div class="card mb-2" th:if="${pedido.estado.name() == 'ENTREGADO'}">
+        <div class="alert alert-success" style="margin:0;">
+          Pedido entregado a las <strong th:text="${pedido.horaEntregaFormateada}"></strong>.
+        </div>
+      </div>
+
+      <!-- Zona peligrosa -->
+      <div class="card" style="border-color:#f5c2c2;">
+        <div class="card-header" style="border-bottom-color:#fde8e8;">
+          <span class="card-title" style="color:var(--danger);">Zona Peligrosa</span>
+        </div>
+        <p class="text-muted text-sm mb-2">Esta acción no se puede deshacer.</p>
+        <form th:action="@{/pedidos/{id}/eliminar(id=${pedido.id})}" method="post"
+              onsubmit="return confirm('¿Eliminar este pedido definitivamente?')">
+          <button type="submit" class="btn btn-danger btn-full">Eliminar Pedido</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

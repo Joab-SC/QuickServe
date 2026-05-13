@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Pedido — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}" class="active">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="page-header">
+    <h1>Registrar Pedido</h1>
+    <p>Seleccione mesa, mesero y productos para confirmar</p>
+  </div>
+
+  <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+  <form method="post" th:action="@{/pedidos/registrar}" id="pedido-form">
+    <div class="registrar-layout">
+
+      <!-- Columna izquierda -->
+      <div>
+
+        <!-- Paso 1 -->
+        <div class="card mb-2">
+          <div class="card-header">
+            <span class="card-title">1 · Mesa y Mesero</span>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Mesa disponible *</label>
+              <select name="mesaNumero" class="form-control" required>
+                <option value="">— Seleccione —</option>
+                <option th:each="m : ${mesasDisponibles}"
+                        th:value="${m.numero}"
+                        th:text="'Mesa ' + ${m.numero}"
+                        th:selected="${mesaPreseleccionada != null and mesaPreseleccionada == m.numero}">
+                </option>
+              </select>
+              <div class="form-hint" th:if="${mesasDisponibles.isEmpty()}"
+                   style="color:var(--danger);">No hay mesas disponibles.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mesero *</label>
+              <select name="meseroCedula" class="form-control" required>
+                <option th:each="m : ${meseros}"
+                        th:value="${m.cedula}"
+                        th:text="${m.nombre}"></option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Observaciones</label>
+            <textarea name="observaciones" class="form-control" rows="2"
+                      placeholder="Ej: Sin cebolla, alergia al gluten…"></textarea>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">2 · Seleccionar Productos</span>
+            <span class="text-muted text-sm">Toque para agregar</span>
+          </div>
+
+          <div class="tipo-section" th:if="${!entradas.isEmpty()}">
+            <div class="tipo-label">Entradas</div>
+            <div class="prod-grid">
+              <div th:each="p : ${entradas}" class="prod-card"
+                   th:data-id="${p.id}" th:data-nombre="${p.nombre}" th:data-precio="${p.precio}"
+                   onclick="toggleProducto(this)">
+                <div class="prod-tipo">Entrada</div>
+                <div class="prod-nombre" th:text="${p.nombre}"></div>
+                <div class="prod-desc"   th:text="${p.descripcion}"></div>
+                <div class="prod-precio" th:text="${p.precioFormateado}"></div>
+                <div class="qty-row">
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,-1)">−</button>
+                  <span class="qty-val">1</span>
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,+1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tipo-section" th:if="${!platosFuertes.isEmpty()}">
+            <div class="tipo-label">Platos Fuertes</div>
+            <div class="prod-grid">
+              <div th:each="p : ${platosFuertes}" class="prod-card"
+                   th:data-id="${p.id}" th:data-nombre="${p.nombre}" th:data-precio="${p.precio}"
+                   onclick="toggleProducto(this)">
+                <div class="prod-tipo">Plato Fuerte</div>
+                <div class="prod-nombre" th:text="${p.nombre}"></div>
+                <div class="prod-desc"   th:text="${p.descripcion}"></div>
+                <div class="prod-precio" th:text="${p.precioFormateado}"></div>
+                <div class="qty-row">
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,-1)">−</button>
+                  <span class="qty-val">1</span>
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,+1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tipo-section" th:if="${!postres.isEmpty()}">
+            <div class="tipo-label">Postres</div>
+            <div class="prod-grid">
+              <div th:each="p : ${postres}" class="prod-card"
+                   th:data-id="${p.id}" th:data-nombre="${p.nombre}" th:data-precio="${p.precio}"
+                   onclick="toggleProducto(this)">
+                <div class="prod-tipo">Postre</div>
+                <div class="prod-nombre" th:text="${p.nombre}"></div>
+                <div class="prod-desc"   th:text="${p.descripcion}"></div>
+                <div class="prod-precio" th:text="${p.precioFormateado}"></div>
+                <div class="qty-row">
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,-1)">−</button>
+                  <span class="qty-val">1</span>
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,+1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tipo-section" th:if="${!bebidas.isEmpty()}" style="margin-bottom:0;">
+            <div class="tipo-label">Bebidas</div>
+            <div class="prod-grid">
+              <div th:each="p : ${bebidas}" class="prod-card"
+                   th:data-id="${p.id}" th:data-nombre="${p.nombre}" th:data-precio="${p.precio}"
+                   onclick="toggleProducto(this)">
+                <div class="prod-tipo">Bebida</div>
+                <div class="prod-nombre" th:text="${p.nombre}"></div>
+                <div class="prod-desc"   th:text="${p.descripcion}"></div>
+                <div class="prod-precio" th:text="${p.precioFormateado}"></div>
+                <div class="qty-row">
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,-1)">−</button>
+                  <span class="qty-val">1</span>
+                  <button type="button" class="qty-btn" onclick="event.stopPropagation();delta(this,+1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Sidebar resumen -->
+      <div class="resumen-sticky">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Resumen</span>
+            <span id="resumen-count" class="badge estado-creado" style="display:none;">0 ítem(s)</span>
+          </div>
+
+          <div id="resumen-vacio" style="text-align:center;padding:1.5rem 0;color:var(--text3);font-size:.83rem;font-style:italic;">
+            Sin productos seleccionados.
+          </div>
+
+          <div id="resumen-items" style="margin-bottom:.25rem;"></div>
+
+          <div id="resumen-total-row" class="resumen-total" style="display:none;">
+            <span>Total</span>
+            <span id="resumen-total-val">$0</span>
+          </div>
+
+          <div id="hidden-fields"></div>
+
+          <div style="margin-top:1.1rem;display:flex;flex-direction:column;gap:.55rem;">
+            <button type="submit" class="btn btn-primary btn-full btn-lg"
+                    id="btn-confirmar" disabled>
+              Confirmar Pedido
+            </button>
+            <a href="/" class="btn btn-secondary btn-full" style="text-align:center;">Cancelar</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+<script>
+  const sel = {};
+
+  function toggleProducto(card) {
+    const id = card.dataset.id;
+    if (sel[id]) { delete sel[id]; card.classList.remove('selected'); }
+    else {
+      sel[id] = { nombre: card.dataset.nombre, precio: parseFloat(card.dataset.precio), cantidad: 1 };
+      card.classList.add('selected');
+      card.querySelector('.qty-val').textContent = '1';
+    }
+    render();
+  }
+
+  function delta(btn, d) {
+    const card = btn.closest('.prod-card');
+    const id = card.dataset.id;
+    if (!sel[id]) return;
+    sel[id].cantidad = Math.max(1, sel[id].cantidad + d);
+    card.querySelector('.qty-val').textContent = sel[id].cantidad;
+    render();
+  }
+
+  function render() {
+    const ri  = document.getElementById('resumen-items');
+    const rv  = document.getElementById('resumen-vacio');
+    const hf  = document.getElementById('hidden-fields');
+    const tr  = document.getElementById('resumen-total-row');
+    const tv  = document.getElementById('resumen-total-val');
+    const btn = document.getElementById('btn-confirmar');
+    const cnt = document.getElementById('resumen-count');
+    const ids = Object.keys(sel);
+    hf.innerHTML = '';
+
+    if (!ids.length) {
+      ri.innerHTML = '';
+      rv.style.display = 'block';
+      tr.style.display = 'none';
+      btn.disabled = true;
+      cnt.style.display = 'none';
+      return;
+    }
+
+    rv.style.display = 'none';
+    let total = 0, html = '';
+    ids.forEach(id => {
+      const it = sel[id], sub = it.precio * it.cantidad;
+      total += sub;
+      html += `<div class="resumen-item">
+               <span>${it.cantidad}× ${it.nombre}</span>
+               <span style="font-weight:600;color:var(--vino);">$${sub.toLocaleString('es-CO')}</span>
+             </div>`;
+      hf.innerHTML += `<input type="hidden" name="productoIds" value="${id}">
+                     <input type="hidden" name="cantidades"  value="${it.cantidad}">`;
+    });
+
+    ri.innerHTML = html;
+    tv.textContent = '$' + total.toLocaleString('es-CO');
+    tr.style.display = 'flex';
+    btn.disabled = false;
+    cnt.textContent = ids.length + (ids.length === 1 ? ' ítem' : ' ítems');
+    cnt.style.display = 'inline-flex';
+  }
+</script>
+</body>
+</html>

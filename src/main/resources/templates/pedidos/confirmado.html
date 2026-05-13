@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Pedido Confirmado — La Mesa Sobria</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">La Mesa <span>Sobria</span></a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a th:href="@{/pedidos/registrar}">Nuevo Pedido</a>
+    <a th:href="@{/pedidos}">Pedidos</a>
+    <a th:href="@{/productos}">Productos</a>
+    <a th:href="@{/cocina}">Cocina</a>
+    <a th:href="@{/mesero}">Mesero
+      <span class="notif-badge" th:if="${notificaciones > 0}" th:text="${notificaciones}"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+  <div style="max-width:560px;margin:0 auto;">
+
+    <!-- Ícono de éxito -->
+    <div style="text-align:center;margin:2.5rem 0 2rem;">
+      <div style="width:72px;height:72px;border-radius:50%;
+                  background:var(--s-ok-bg);border:2px solid var(--s-ok-b);
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:2rem;margin:0 auto 1.1rem;color:var(--s-ok-t);">
+        ✓
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.75rem;
+                 font-weight:700;color:var(--vino);margin-bottom:.4rem;">
+        Pedido Registrado
+      </h1>
+      <p style="color:var(--text3);font-size:.9rem;">Enviado a cocina correctamente.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"
+              th:text="'Pedido #' + ${pedido.id} + ' · Mesa ' + ${pedido.mesa.numero}"></span>
+        <span class="badge estado-creado">En Cocina</span>
+      </div>
+
+      <div class="grid-2 mb-2">
+        <div>
+          <div class="form-label">Mesero</div>
+          <div style="font-weight:600;"
+               th:text="${pedido.mesero != null ? pedido.mesero.nombre : '—'}"></div>
+        </div>
+        <div>
+          <div class="form-label">Hora</div>
+          <div th:text="${pedido.horaPedidoFormateada}"></div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning"
+           th:if="${pedido.observaciones != null and !pedido.observaciones.isBlank()}">
+        <strong>Nota:</strong> <span th:text="${pedido.observaciones}"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+          <tr>
+            <th>Producto</th>
+            <th style="text-align:center;">Cant.</th>
+            <th style="text-align:right;">Subtotal</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="d : ${pedido.detalles}">
+            <td th:text="${d.producto.nombre}"></td>
+            <td style="text-align:center;" th:text="${d.cantidad}"></td>
+            <td style="text-align:right;" th:text="${d.subtotalFormateado}"></td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td colspan="2"
+                style="padding:.7rem 1.4rem;font-weight:700;text-align:right;
+                         border-top:2px solid var(--border-md);">TOTAL</td>
+            <td style="padding:.7rem 1.4rem;font-weight:700;text-align:right;
+                         border-top:2px solid var(--border-md);
+                         font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--granate);"
+                th:text="${pedido.totalFormateado}"></td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="flex-end mt-3">
+        <a th:href="@{/pedidos/registrar}" class="btn btn-outline">+ Otro Pedido</a>
+        <a th:href="@{/pedidos/{id}(id=${pedido.id})}" class="btn btn-secondary">Ver Detalle</a>
+        <a href="/" class="btn btn-primary">Dashboard</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
