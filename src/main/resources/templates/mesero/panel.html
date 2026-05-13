@@ -37,7 +37,7 @@
   <!-- Pedidos LISTOS -->
   <div th:if="${!pedidosListos.isEmpty()}">
     <div class="alert alert-success mb-2" style="font-weight:600;font-size:.9rem;">
-      <span th:text="${pedidosListos.size()}"></span> pedido(s) listo(s) para entregar
+       <span th:text="${pedidosListos.size()}"></span> pedido(s) listo(s) para entregar
     </div>
     <div class="mesero-notif-grid mb-2">
       <div th:each="p : ${pedidosListos}" class="mesero-notif-card">
@@ -93,7 +93,7 @@
   </div>
 
   <!-- Pedidos esperando cocina -->
-  <div class="card">
+  <div class="card mb-2">
     <div class="card-header">
       <span class="card-title">Esperando Cocina</span>
       <span class="badge estado-creado" th:text="${pedidosCreados.size()} + ' pendiente(s)'"></span>
@@ -116,6 +116,49 @@
           <td th:text="${p.totalFormateado}"></td>
           <td th:text="${p.horaPedidoFormateada}"></td>
           <td><a th:href="@{/pedidos/{id}(id=${p.id})}" class="btn btn-secondary btn-sm">Ver</a></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Gestión de Mesas ──────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"> Gestión de Mesas</span>
+      <span class="badge estado-creado"
+            th:text="${mesasOcupadas.size()} + ' ocupada(s)'"></span>
+    </div>
+
+    <div th:if="${mesasOcupadas.isEmpty()}"
+         style="text-align:center;padding:1.5rem;color:var(--text3);font-size:.875rem;font-style:italic;">
+      Todas las mesas están disponibles.
+    </div>
+
+    <div class="table-wrap" th:unless="${mesasOcupadas.isEmpty()}">
+      <table>
+        <thead>
+        <tr>
+          <th>Mesa</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mesa : ${mesasOcupadas}">
+          <td><strong th:text="'Mesa ' + ${mesa.numero}"></strong></td>
+          <td>
+            <span class="badge estado-creado">Ocupada</span>
+          </td>
+          <td>
+            <form th:action="@{/mesero/mesas/{n}/desocupar(n=${mesa.numero})}"
+                  method="post"
+                  th:onsubmit="'return confirm(\'¿Desocupar Mesa ' + ${mesa.numero} + '?\')'">
+              <button type="submit" class="btn btn-secondary btn-sm">
+                Desocupar
+              </button>
+            </form>
+          </td>
         </tr>
         </tbody>
       </table>
