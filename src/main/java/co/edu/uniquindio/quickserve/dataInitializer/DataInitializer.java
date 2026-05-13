@@ -204,36 +204,6 @@ public class DataInitializer {
 
         LocalDateTime base = LocalDateTime.now().minusHours(3);
 
-        crearPedidoSemilla(
-                2,
-                "1001",
-                EstadoPedido.ENTREGADO,
-                base.minusMinutes(90),
-                base.minusMinutes(60),
-                "Sin picante",
-                false,
-                1,
-                new int[][]{
-                        {4, 2},
-                        {12, 2}
-                }
-        );
-
-        crearPedidoSemilla(
-                5,
-                "1002",
-                EstadoPedido.ENTREGADO,
-                base.minusMinutes(80),
-                base.minusMinutes(45),
-                "",
-                false,
-                2,
-                new int[][]{
-                        {5, 1},
-                        {9, 2},
-                        {13, 2}
-                }
-        );
 
         crearPedidoSemilla(
                 4,
