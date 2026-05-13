@@ -98,7 +98,18 @@ public class PedidoController {
             return "redirect:/pedidos/registrar";
         }
     }
-    
+
+    // ── CONFIRMACIÓN ──────────────────────────────────────────────────────────
+
+    @GetMapping("/confirmado/{id}")
+    public String confirmado(@PathVariable Integer id, Model model) {
+        Optional<Pedido> pedido = pedidoService.buscarPorId(id);
+        if (pedido.isEmpty()) return "redirect:/";
+        model.addAttribute("pedido",         pedido.get());
+        model.addAttribute("notificaciones", pedidoService.contarNotificaciones());
+        return "pedidos/confirmado";
+    }
+
     // ── EDITAR ────────────────────────────────────────────────────────────────
 
     @GetMapping("/{id}/editar")
