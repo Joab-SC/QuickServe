@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,7 +120,7 @@ public class PedidoController {
             return "redirect:/pedidos";
 
         // Mesa actual siempre disponible para edición
-        List<Mesa> mesas = pedidoService.getMesasDisponibles();
+        List<Mesa> mesas = new ArrayList<>(pedidoService.getMesasDisponibles());
         Mesa mesaActual = pedido.get().getMesa();
         if (mesas.stream().noneMatch(m -> m.getNumero().equals(mesaActual.getNumero()))) {
             mesas.add(0, mesaActual);

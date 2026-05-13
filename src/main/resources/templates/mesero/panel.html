@@ -37,7 +37,7 @@
   <!-- Pedidos LISTOS -->
   <div th:if="${!pedidosListos.isEmpty()}">
     <div class="alert alert-success mb-2" style="font-weight:600;font-size:.9rem;">
-      🔔 <span th:text="${pedidosListos.size()}"></span> pedido(s) listo(s) para entregar
+      <span th:text="${pedidosListos.size()}"></span> pedido(s) listo(s) para entregar
     </div>
     <div class="mesero-notif-grid mb-2">
       <div th:each="p : ${pedidosListos}" class="mesero-notif-card">
