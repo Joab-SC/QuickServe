@@ -6,10 +6,7 @@ import co.edu.uniquindio.quickserve.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PedidoService {
@@ -214,5 +211,17 @@ public class PedidoService {
             mesa.setOcupada(false);
             mesaRepository.save(mesa);
         });
+    }
+
+    public List<Mesa> getMesasParaDesocupar() {
+        // Mesas ocupadas cuyos pedidos activos ya están todos entregados
+        Set<Integer> mesasConPedidoActivo = pedidoRepository.findAll().stream()
+                .filter(p -> p.getEstado() != EstadoPedido.ENTREGADO)
+                .map(p -> p.getMesa().getNumero())
+                .collect(java.util.stream.Collectors.toSet());
+
+        return mesaRepository.findOcupadas().stream()
+                .filter(m -> !mesasConPedidoActivo.contains(m.getNumero()))
+                .toList();
     }
 }
