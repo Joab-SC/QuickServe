@@ -162,5 +162,18 @@ public class PedidoController {
         return "redirect:/pedidos";
     }
 
+    // ── CAMBIAR ESTADO ────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/estado")
+    public String cambiarEstado(
+            @PathVariable Integer id,
+            @RequestParam String estado,
+            @RequestParam(required = false, defaultValue = "/pedidos") String next) {
+        try {
+            EstadoPedido nuevoEstado = EstadoPedido.valueOf(estado);
+            pedidoService.actualizarEstado(id, nuevoEstado);
+        } catch (IllegalArgumentException ignored) {}
+        return "redirect:" + next;
+    }
 
 }
