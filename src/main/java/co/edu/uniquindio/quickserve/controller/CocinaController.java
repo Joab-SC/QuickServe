@@ -29,4 +29,12 @@ public class CocinaController {
         model.addAttribute("notificaciones", pedidoService.contarNotificaciones());
         return "cocina/panel";
     }
+
+    /** Paso 4 del diagrama: Cocina marca EN PREPARACIÓN */
+    @PostMapping("/{id}/preparacion")
+    public String marcarPreparacion(@PathVariable Integer id) {
+        pedidoService.marcarEnPreparacion(id);
+        return "redirect:/cocina";
+    }
+
 }
