@@ -41,4 +41,10 @@ public class MeseroController {
         return "redirect:/mesero";
     }
 
+    /** Mesero reconoce la notificación (la descarta visualmente) */
+    @PostMapping("/{id}/notificacion/limpiar")
+    public String limpiarNotificacion(@PathVariable Integer id) {
+        pedidoService.limpiarNotificacion(id);
+        return "redirect:/mesero";
+    }
 }
