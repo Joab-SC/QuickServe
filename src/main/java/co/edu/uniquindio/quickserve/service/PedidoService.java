@@ -201,6 +201,11 @@ public class PedidoService {
 
     public void eliminar(Integer pedidoId) {
         pedidoRepository.findById(pedidoId).ifPresent(p -> {
+            // Bloqueo backend: no se puede eliminar si está LISTO o ENTREGADO
+            if (p.getEstado() == EstadoPedido.LISTO || p.getEstado() == EstadoPedido.ENTREGADO) {
+                throw new IllegalStateException(
+                        "No se puede eliminar un pedido en estado " + p.getEstado().name());
+            }
             if (p.getMesa() != null) p.getMesa().setOcupada(false);
             pedidoRepository.deleteById(pedidoId);
         });
