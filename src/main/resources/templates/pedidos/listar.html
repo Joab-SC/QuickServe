@@ -77,7 +77,8 @@
               <a th:href="@{/pedidos/{id}/editar(id=${p.id})}" class="btn btn-outline btn-sm"
                  th:if="${p.estado.name() != 'ENTREGADO'}">Editar</a>
               <form th:action="@{/pedidos/{id}/eliminar(id=${p.id})}" method="post"
-                    onsubmit="return confirm('¿Eliminar pedido?')">
+                    onsubmit="return confirm('¿Eliminar pedido?')"
+                    th:if="${p.estado.name() != 'LISTO' and p.estado.name() != 'ENTREGADO'}">
                 <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
               </form>
             </div>

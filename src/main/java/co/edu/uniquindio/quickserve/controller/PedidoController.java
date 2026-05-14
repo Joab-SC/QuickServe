@@ -158,8 +158,12 @@ public class PedidoController {
     // ── ELIMINAR ──────────────────────────────────────────────────────────────
 
     @PostMapping("/{id}/eliminar")
-    public String eliminar(@PathVariable Integer id) {
-        pedidoService.eliminar(id);
+    public String eliminar(@PathVariable Integer id, RedirectAttributes ra) {
+        try {
+            pedidoService.eliminar(id);
+        } catch (IllegalStateException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/pedidos";
     }
 
