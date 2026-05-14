@@ -159,7 +159,8 @@
       </div>
 
       <!-- Zona peligrosa -->
-      <div class="card" style="border-color:#f5c2c2;">
+      <div class="card" style="border-color:#f5c2c2;"
+           th:if="${pedido.estado.name() != 'LISTO' and pedido.estado.name() != 'ENTREGADO'}">
         <div class="card-header" style="border-bottom-color:#fde8e8;">
           <span class="card-title" style="color:var(--danger);">Zona Peligrosa</span>
         </div>
