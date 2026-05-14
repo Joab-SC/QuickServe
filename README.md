@@ -303,6 +303,26 @@ Los IDs 1–12 están reservados para semillas. Pedidos nuevos en ejecución rec
 
 ---
 
+## Requisitos no funcionales
+
+### Rendimiento
+- El servidor responde en menos de 2 segundos para cualquier operación bajo uso normal
+- Los datos de prueba se cargan una sola vez al arrancar la app (en `DataInitializer`), no en cada petición
+- Al manejar todo en memoria con `ArrayList`, las operaciones son instantáneas para el volumen del MVP
+
+### Validaciones
+- **Cliente:** los formularios usan atributos HTML5 (`required`, `min`, `maxlength`) para bloquear envíos inválidos antes de llegar al servidor
+- **Servidor:** el servicio lanza excepciones si el pedido no tiene productos, si alguna cantidad es 0, o si la mesa o el mesero no existen — el controlador captura eso y redirige con mensaje de error
+- No se puede editar ni eliminar un pedido que ya fue entregado
+
+### Accesibilidad
+- Todos los campos de formulario tienen su `<label>` correctamente asociado
+- Los formularios se pueden completar solo con teclado (Tab + Enter)
+- Los mensajes de error aparecen en texto, no solo con color
+- El orden de los elementos en el HTML sigue el flujo lógico del formulario
+
+---
+
 ## Convenciones
 
 **Nomenclatura:** clases en `PascalCase`, métodos y variables en `camelCase`, enums en `UPPER_SNAKE_CASE`, paquetes en `lowercase`.
