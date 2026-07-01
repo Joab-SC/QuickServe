@@ -2,12 +2,19 @@ package co.edu.uniquindio.quickserve.model;
 
 
 import co.edu.uniquindio.quickserve.model.enums.EstadoPedido;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
 public class Pedido {
     private Integer id;
     private Mesa mesa;
@@ -53,32 +60,4 @@ public class Pedido {
             case ENTREGADO   -> "estado-entregado";
         };
     }
-
-    // Getters & Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public Mesa getMesa() { return mesa; }
-    public void setMesa(Mesa mesa) { this.mesa = mesa; }
-
-    public Mesero getMesero() { return mesero; }
-    public void setMesero(Mesero mesero) { this.mesero = mesero; }
-
-    public EstadoPedido getEstado() { return estado; }
-    public void setEstado(EstadoPedido estado) { this.estado = estado; }
-
-    public LocalDateTime getHoraPedido() { return horaPedido; }
-    public void setHoraPedido(LocalDateTime horaPedido) { this.horaPedido = horaPedido; }
-
-    public LocalDateTime getHoraEntrega() { return horaEntrega; }
-    public void setHoraEntrega(LocalDateTime horaEntrega) { this.horaEntrega = horaEntrega; }
-
-    public String getObservaciones() { return observaciones; }
-    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
-
-    public List<DetallePedido> getDetalles() { return detalles; }
-    public void setDetalles(List<DetallePedido> detalles) { this.detalles = detalles; }
-
-    public Boolean getNotificacionPendiente() { return notificacionPendiente; }
-    public void setNotificacionPendiente(Boolean notificacionPendiente) { this.notificacionPendiente = notificacionPendiente; }
 }

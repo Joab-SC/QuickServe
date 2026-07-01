@@ -1,19 +1,15 @@
 package co.edu.uniquindio.quickserve.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Mesa {
     private Integer numero;
     private Boolean ocupada;
-
-    public Mesa() {}
-
-    public Mesa(Integer numero, Boolean ocupada) {
-        this.numero = numero;
-        this.ocupada = ocupada;
-    }
-
-    public Integer getNumero() { return numero; }
-    public void setNumero(Integer numero) { this.numero = numero; }
-
-    public Boolean getOcupada() { return ocupada; }
-    public void setOcupada(Boolean ocupada) { this.ocupada = ocupada; }
 }
